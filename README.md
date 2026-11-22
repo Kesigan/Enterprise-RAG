@@ -13,4 +13,6 @@ A document-grounded knowledge assistant for enterprise teams.
 
 ## Architecture
 
+![Enterprise RAG architecture diagram](docs/Enterprise_RAG_Architecture.png)
+
 FastAPI · Amazon S3 · Amazon Bedrock · PostgreSQL · Pinecone
