@@ -1,15 +1,155 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Atlas | Enterprise Knowledge</title><link rel="stylesheet" href="/static/css/styles.css?v=chat-scroll-1"></head>
-<body><div class="shell"><aside class="sidebar"><div class="logo">✦ <span>ATLAS</span><small>Enterprise AI</small></div>
-<div class="eyebrow">WORKSPACE</div><button class="nav active" id="chatTab">◈ &nbsp; Knowledge chat</button>
-<button class="nav" id="docsTab">▤ &nbsp; Documents</button><button class="nav" id="approvalTab">✓ &nbsp; Approvals</button><button class="nav" id="adminTab">◫ &nbsp; Metrics</button>
-<div class="sidebottom">Single-workspace demo · No login</div></aside>
-<main><header><div><span class="eyebrow">YOUR WORKSPACE / KNOWLEDGE</span><h1 id="heading">Ask your organization's knowledge</h1></div><div class="pill">● AWS-powered</div></header>
-<section id="chatView" class="panel"><div class="hero"><div class="spark">✦</div><h2>What can I help you find?</h2><p>Ask questions about your approved documents. Every answer includes its evidence.</p>
-<div class="suggestions"><button data-q="What is our leave policy?">Leave policy ↗</button><button data-q="Summarize the onboarding process">Onboarding ↗</button><button data-q="What are the IT security rules?">IT security ↗</button></div></div>
-<button type="button" id="newChat">+ New conversation</button><div id="messages" aria-live="polite"></div><form id="chatForm" class="composer"><textarea id="question" rows="2" placeholder="Ask a question about company knowledge..." required></textarea><button type="submit">Send ↗</button></form><div class="hint">Answers may be inaccurate. Verify source passages before taking action.</div></section>
-<section id="docsView" class="panel hidden"><h2>Knowledge library</h2><p>Upload an approved PDF, DOCX, TXT or Markdown file. Use non-sensitive demo documents only.</p><form id="uploadForm"><input id="file" type="file" accept=".pdf,.docx,.txt,.md" required><button>Upload document</button></form><div id="docs"></div></section>
-<section id="approvalView" class="panel hidden"><div class="section-header"><div><h2>Human-in-the-loop approvals</h2><p>Review pending requests. Approving records a decision only; no document is deleted or exported.</p></div><button type="button" id="refreshApprovals">Refresh</button></div><div id="approvalSummary" role="status"></div><div id="approvalList" aria-live="polite"></div></section>
-<section id="adminView" class="panel hidden"><h2>Workspace metrics</h2><pre id="metrics">Loading metrics...</pre><h2>Guardrail events</h2><pre id="guardrailMetrics">Loading guardrail metrics...</pre></section>
-<div id="toast" role="status"></div></main></div>
-<script src="/static/js/app.js?v=chat-scroll-1"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f6fa">
+  <meta name="description" content="A document-grounded enterprise knowledge assistant with cited answers and human review.">
+  <title>Enterprise RAG | Knowledge Workspace</title>
+  <link rel="stylesheet" href="/static/css/styles.css?v=workspace-refresh-1">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div class="brand-copy"><strong>Enterprise RAG</strong><small>KNOWLEDGE WORKSPACE</small></div>
+      </div>
+
+      <div class="sidebar-label">WORKSPACE</div>
+      <nav class="primary-nav" aria-label="Workspace navigation">
+        <button class="nav-item active" id="chatTab" aria-current="page">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l1.5-3.1A7.5 7.5 0 1 1 20 11.5Z"/><path d="M8.5 11.5h7M8.5 14.5h4"/></svg>
+          <span>Knowledge assistant</span>
+        </button>
+        <button class="nav-item" id="docsTab">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.75h8l4 4v12.5H6z"/><path d="M14 3.75v4h4M9 12h6M9 15.5h6"/></svg>
+          <span>Document library</span>
+        </button>
+        <button class="nav-item" id="approvalTab">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.75h10v15H7z"/><path d="m9.5 12 1.75 1.75L15 10M9.5 8h5"/></svg>
+          <span>Approvals</span>
+        </button>
+        <button class="nav-item" id="adminTab">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 19.25h15M6.5 16V10m5 6V5m5 11v-4"/></svg>
+          <span>System overview</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-card">
+        <span class="sidebar-card-icon" aria-hidden="true">✦</span>
+        <strong>Answers with evidence</strong>
+        <p>Responses are grounded in indexed documents and include source passages.</p>
+      </div>
+      <div class="sidebar-footer"><span class="footer-dot"></span> Document-grounded AI</div>
+    </aside>
+
+    <main class="main-content">
+      <header class="page-header">
+        <div>
+          <div class="breadcrumb"><span>WORKSPACE</span><span class="breadcrumb-slash">/</span><span>KNOWLEDGE</span></div>
+          <h1 id="heading">Knowledge assistant</h1>
+        </div>
+        <div class="workspace-chip"><span class="chip-mark">✦</span> Enterprise RAG</div>
+      </header>
+
+      <section id="chatView" class="view-panel chat-panel">
+        <div class="chat-layout">
+          <div class="chat-primary">
+            <div class="hero">
+              <span class="hero-kicker"><span class="hero-kicker-dot"></span> YOUR KNOWLEDGE, IN CONTEXT</span>
+              <h2>Find trusted answers<br>across your documents.</h2>
+              <p>Ask a question in natural language. Get a clear response grounded in your organization’s knowledge.</p>
+              <div class="capability-list">
+                <span><i>✓</i> Cited sources</span>
+                <span><i>✓</i> Access-aware retrieval</span>
+                <span><i>✓</i> Human review</span>
+              </div>
+            </div>
+
+            <div class="suggestion-block">
+              <div class="section-caption">TRY ASKING</div>
+              <div class="suggestions">
+                <button data-q="What is our leave policy?"><span>Leave policy</span><b>↗</b></button>
+                <button data-q="Summarize the onboarding process"><span>Onboarding process</span><b>↗</b></button>
+                <button data-q="What are the IT security rules?"><span>IT security</span><b>↗</b></button>
+              </div>
+            </div>
+
+            <div class="conversation-toolbar">
+              <div><span class="section-caption">CONVERSATION</span><strong>Ask a follow-up anytime</strong></div>
+              <button type="button" id="newChat" class="new-chat"><span aria-hidden="true">＋</span> New chat</button>
+            </div>
+            <div id="messages" aria-live="polite" aria-label="Conversation messages"></div>
+            <form id="chatForm" class="composer">
+              <textarea id="question" rows="2" aria-label="Your question" placeholder="Ask a question about your organization..." required></textarea>
+              <button type="submit" class="send-button"><span>Send</span><span aria-hidden="true">↗</span></button>
+            </form>
+            <div class="disclaimer">AI-generated answers can be incomplete. Review the cited passages before acting.</div>
+          </div>
+
+          <aside class="context-rail" aria-label="How the assistant works">
+            <div class="rail-card">
+              <div class="rail-heading"><span class="rail-icon">✳</span><span>Built for knowledge work</span></div>
+              <p>Connect questions to the information your team has already approved.</p>
+              <div class="rail-divider"></div>
+              <div class="rail-step"><span>01</span><div><strong>Retrieve</strong><small>Search relevant passages</small></div></div>
+              <div class="rail-step"><span>02</span><div><strong>Ground</strong><small>Answer from the evidence</small></div></div>
+              <div class="rail-step"><span>03</span><div><strong>Review</strong><small>Keep people in control</small></div></div>
+            </div>
+            <div class="rail-note"><span class="note-mark">“</span><p>Know where an answer came from—not just what it says.</p></div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="docsView" class="view-panel content-panel hidden">
+        <div class="view-intro">
+          <span class="section-caption">KNOWLEDGE SOURCES</span>
+          <h2>Document library</h2>
+          <p>Manage the files available to the knowledge assistant.</p>
+        </div>
+        <form id="uploadForm" class="upload-form">
+          <label class="upload-drop" for="file">
+            <input id="file" type="file" accept=".pdf,.docx,.txt,.md" required>
+            <span class="upload-icon" aria-hidden="true">↑</span>
+            <span class="upload-copy"><strong>Select a document to upload</strong><small>PDF, DOCX, TXT or Markdown · Up to 10 MB</small></span>
+            <span class="upload-link">Choose file</span>
+          </label>
+          <button type="submit" class="primary-button">Upload document <span aria-hidden="true">↗</span></button>
+        </form>
+        <div class="list-heading"><strong>Indexed documents</strong><span>Latest files in this workspace</span></div>
+        <div id="docs" class="document-list" aria-live="polite">Loading documents…</div>
+      </section>
+
+      <section id="approvalView" class="view-panel content-panel hidden">
+        <div class="view-intro section-header">
+          <div>
+            <span class="section-caption">HUMAN-IN-THE-LOOP</span>
+            <h2>Approval center</h2>
+            <p>Review requests that need an administrator’s decision.</p>
+          </div>
+          <button type="button" id="refreshApprovals" class="secondary-button"><span aria-hidden="true">↻</span> Refresh</button>
+        </div>
+        <div class="approval-note"><span>i</span> Decisions are recorded for review; approving a request does not execute the requested action.</div>
+        <div id="approvalSummary" class="approval-summary" role="status"></div>
+        <div id="approvalList" aria-live="polite"></div>
+      </section>
+
+      <section id="adminView" class="view-panel content-panel hidden">
+        <div class="view-intro">
+          <span class="section-caption">OBSERVABILITY</span>
+          <h2>System overview</h2>
+          <p>Review workspace activity and guardrail events.</p>
+        </div>
+        <div class="metrics-grid">
+          <article class="metric-card"><div class="metric-card-heading"><span class="metric-symbol">▤</span><h3>Workspace activity</h3></div><pre id="metrics">Loading metrics…</pre></article>
+          <article class="metric-card"><div class="metric-card-heading"><span class="metric-symbol">⌑</span><h3>Guardrail events</h3></div><pre id="guardrailMetrics">Loading guardrail metrics…</pre></article>
+        </div>
+      </section>
+
+      <div id="toast" role="status" aria-live="polite"></div>
+    </main>
+  </div>
+  <script src="/static/js/app.js?v=workspace-refresh-1"></script>
+</body>
+</html>
