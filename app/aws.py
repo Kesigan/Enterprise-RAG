@@ -20,8 +20,8 @@ def client(service):
 
 @trace("embed")
 def embed(text):
-    body = json.dumps({'inputText': text, 'dimensions': settings().embed_dim, 'normalize': True})
-    result = client('bedrock-runtime').invoke_model(modelId=settings().bedrock_embed_model, body=body)
+    body = json.dumps({'inputText': text, 'dimensions': settings().embedding_dimension, 'normalize': True})
+    result = client('bedrock-runtime').invoke_model(modelId=settings().bedrock_embedded_model, body=body)
     return json.loads(result['body'].read())['embedding']
 
 @trace("answer")

@@ -26,17 +26,17 @@ def index():
         # Only create on an actual 404; never hide auth/network failures.
         if getattr(exc, 'status', None) != 404:
             raise
-        log.info('Creating Pinecone index %s (dimension=%d, metric=cosine)', name, s.embed_dim)
+        log.info('Creating Pinecone index %s (dimension=%d, metric=cosine)', name, s.embedding_dimension)
         try:
-            pc.create_index(name=name, dimension=s.embed_dim, metric='cosine',
+            pc.create_index(name=name, dimension=s.embedding_dimension, metric='cosine',
                 spec=ServerlessSpec(cloud=s.pinecone_cloud, region=s.pinecone_region))
         except Exception as create_exc:
             # Another process may have created the index concurrently.
             if getattr(create_exc, 'status', None) != 409:
                 raise
         info = pc.describe_index(name)
-    if int(info.dimension) != s.embed_dim:
-        raise ValueError(f'Pinecone index {name} dimension={info.dimension}, expected {s.embed_dim}. '
+    if int(info.dimension) != s.embedding_dimension:
+        raise ValueError(f'Pinecone index {name} dimension={info.dimension}, expected {s.embedding_dimension}. '
                          'Use a different index name or matching EMBED_DIM.')
     if str(info.metric).lower() != 'cosine':
         raise ValueError(f'Pinecone index {name} must use cosine metric, got {info.metric}')

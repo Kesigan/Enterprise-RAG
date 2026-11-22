@@ -40,7 +40,7 @@ def process_s3_key(key):
         if doc['status'] not in ('pending','failed'): return
         conn.execute("UPDATE documents SET status='processing' WHERE id=%s",(doc['id'],))
     try:
-        obj=client('s3').get_object(Bucket=s.s3_bucket,Key=key)
+        obj=client('s3').get_object(Bucket=s.s3_bucket_name,Key=key)
         if obj['ContentLength']>s.max_upload_bytes: raise ValueError('Upload too large')
         blob=obj['Body'].read(s.max_upload_bytes+1)
         if len(blob)>s.max_upload_bytes: raise ValueError('Upload too large')
